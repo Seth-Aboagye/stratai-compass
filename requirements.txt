@@ -1,5 +1,6 @@
 streamlit
 pandas
 plotly
-fpdf
 xlsxwriter
+fpdf2
+
