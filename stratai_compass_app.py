@@ -386,24 +386,27 @@ def make_pdf_bytes(summary):
     pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
 
+    # Fixed width for text blocks (avoid width=0 issues in fpdf2)
+    W = 180
+
     pdf.set_font("Arial", "B", 16)
     pdf.cell(0, 10, "StratAI Compass Report", ln=True)
 
     pdf.set_font("Arial", size=12)
     pdf.ln(5)
     pdf.multi_cell(
-        0,
+        W,
         8,
         f"Generated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')}",
     )
     pdf.ln(3)
 
-    pdf.multi_cell(0, 8, f"Objective: {summary['objective']}")
-    pdf.multi_cell(0, 8, f"Segment: {summary['segment']}")
-    pdf.multi_cell(0, 8, f"Therapeutic area: {summary['therapeutic']}")
-    pdf.multi_cell(0, 8, f"Benchmark: {summary['benchmark']}")
+    pdf.multi_cell(W, 8, f"Objective: {summary['objective']}")
+    pdf.multi_cell(W, 8, f"Segment: {summary['segment']}")
+    pdf.multi_cell(W, 8, f"Therapeutic area: {summary['therapeutic']}")
+    pdf.multi_cell(W, 8, f"Benchmark: {summary['benchmark']}")
     pdf.multi_cell(
-        0,
+        W,
         8,
         f"Indicative annual price range: "
         f"${summary['price_low']:,} to ${summary['price_high']:,} per account",
@@ -414,7 +417,7 @@ def make_pdf_bytes(summary):
     pdf.cell(0, 8, "Scores", ln=True)
     pdf.set_font("Arial", size=12)
     pdf.multi_cell(
-        0,
+        W,
         8,
         (
             f"Segment fit: {summary['segment_score']}\n"
@@ -429,23 +432,23 @@ def make_pdf_bytes(summary):
     pdf.set_font("Arial", "B", 12)
     pdf.cell(0, 8, "Recommended pricing strategy", ln=True)
     pdf.set_font("Arial", size=12)
-    pdf.multi_cell(0, 8, summary["pricing_model"])
+    pdf.multi_cell(W, 8, summary["pricing_model"])
     pdf.ln(3)
 
     pdf.set_font("Arial", "B", 12)
     pdf.cell(0, 8, "Pricing rationale", ln=True)
     pdf.set_font("Arial", size=12)
     for line in summary["pricing_rationale"]:
-        pdf.multi_cell(0, 8, f"- {line}")
+        pdf.multi_cell(W, 8, f"- {line}")
     pdf.ln(3)
 
     pdf.set_font("Arial", "B", 12)
     pdf.cell(0, 8, "Internal tools and process roadmap", ln=True)
     pdf.set_font("Arial", size=12)
     for action in summary["capability_actions"]:
-        pdf.multi_cell(0, 8, f"- {action}")
+        pdf.multi_cell(W, 8, f"- {action}")
 
-    # Encode to Latin-1 and replace unsupported characters to avoid Unicode errors
+    # Encode to Latin-1 and replace unsupported characters (avoid Unicode errors)
     pdf_str = pdf.output(dest="S")
     pdf_bytes = pdf_str.encode("latin-1", "replace")
     return io.BytesIO(pdf_bytes)
