@@ -448,10 +448,19 @@ def make_pdf_bytes(summary):
     for action in summary["capability_actions"]:
         pdf.multi_cell(W, 8, f"- {action}")
 
-    # Encode to Latin-1 and replace unsupported characters (avoid Unicode errors)
-    pdf_str = pdf.output(dest="S")
-    pdf_bytes = pdf_str.encode("latin-1", "replace")
+    # Get PDF output; fpdf2 may return bytes (newer) or str (older)
+    pdf_out = pdf.output(dest="S")
+
+    if isinstance(pdf_out, bytes):
+        # Already bytes (fpdf2 on Streamlit Cloud)
+        pdf_bytes = pdf_out
+    else:
+        # Old behavior: returned a string that needs encoding
+        pdf_bytes = pdf_out.encode("latin-1", "replace")
+
     return io.BytesIO(pdf_bytes)
+
+
 
 
 # ===========================
