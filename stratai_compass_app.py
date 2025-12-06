@@ -448,17 +448,18 @@ def make_pdf_bytes(summary):
     for action in summary["capability_actions"]:
         pdf.multi_cell(W, 8, f"- {action}")
 
-    # Get PDF output; fpdf2 may return bytes (newer) or str (older)
+    # Get PDF output; fpdf2 may return bytearray, bytes, or str depending on version
     pdf_out = pdf.output(dest="S")
 
-    if isinstance(pdf_out, bytes):
-        # Already bytes (fpdf2 on Streamlit Cloud)
-        pdf_bytes = pdf_out
+    if isinstance(pdf_out, (bytes, bytearray)):
+        # Ensure we end up with plain bytes
+        pdf_bytes = bytes(pdf_out)
     else:
         # Old behavior: returned a string that needs encoding
         pdf_bytes = pdf_out.encode("latin-1", "replace")
 
     return io.BytesIO(pdf_bytes)
+
 
 
 
